@@ -68,16 +68,18 @@ public class iFacialMocapTrackingInterface : ExtTrackingModule
         //Could make a dict<UnifiedExpressions,string> or directly assigning Data.Shapes for better performance but can do math here so whatever for now.
         #region Eye Gaze
         // positive x is to the *right*
-        //UnifiedTracking.Data.Eye.Left.Gaze.x = server.FaceData.BlendValue("eyeLookIn_L") - server.FaceData.BlendValue("eyeLookOut_L");
-        //UnifiedTracking.Data.Eye.Left.Gaze.y = server.FaceData.BlendValue("eyeLookUp_L") - server.FaceData.BlendValue("eyeLookDown_L");
-        //UnifiedTracking.Data.Eye.Right.Gaze.x = server.FaceData.BlendValue("eyeLookOut_R") - server.FaceData.BlendValue("eyeLookIn_R");
-        //UnifiedTracking.Data.Eye.Right.Gaze.y = server.FaceData.BlendValue("eyeLookUp_R") - server.FaceData.BlendValue("eyeLookDown_R");
+        // The original code has this commented and uses the section below, i prefer blendshape usage due to the -1 to 1 OSC value
+        UnifiedTracking.Data.Eye.Left.Gaze.x = server.FaceData.BlendValue("eyeLookIn_L") - server.FaceData.BlendValue("eyeLookOut_L");
+        UnifiedTracking.Data.Eye.Left.Gaze.y = server.FaceData.BlendValue("eyeLookUp_L") - server.FaceData.BlendValue("eyeLookDown_L");
+        UnifiedTracking.Data.Eye.Right.Gaze.x = server.FaceData.BlendValue("eyeLookOut_R") - server.FaceData.BlendValue("eyeLookIn_R");
+        UnifiedTracking.Data.Eye.Right.Gaze.y = server.FaceData.BlendValue("eyeLookUp_R") - server.FaceData.BlendValue("eyeLookDown_R");
 
         // coordinate system is all wacky
-        UnifiedTracking.Data.Eye.Left.Gaze.x = MathF.Tan(server.FaceData.leftEye[1] / 90.0f); // normalized range of -45 to 45 degrees, tan function
+        // This normalized system limits OSC data from -0.3 to 0.3, much lower than what i prefer, probably works with default AdJerry's animation template idk, comment above lines and uncomment these if you wish to use the original method
+        /*UnifiedTracking.Data.Eye.Left.Gaze.x = MathF.Tan(server.FaceData.leftEye[1] / 90.0f); // normalized range of -45 to 45 degrees, tan function
         UnifiedTracking.Data.Eye.Left.Gaze.y = -MathF.Tan(server.FaceData.leftEye[0] / 90.0f);
         UnifiedTracking.Data.Eye.Right.Gaze.x = MathF.Tan(server.FaceData.rightEye[1] / 90.0f);
-        UnifiedTracking.Data.Eye.Right.Gaze.y = -MathF.Tan(server.FaceData.rightEye[0] / 90.0f);
+        UnifiedTracking.Data.Eye.Right.Gaze.y = -MathF.Tan(server.FaceData.rightEye[0] / 90.0f);*/
         #endregion
         #region Eye Openness
         UnifiedTracking.Data.Eye.Left.Openness = 1.0f - (float)Math.Max(0, Math.Min(1, server.FaceData.BlendValue("eyeBlink_R") +
@@ -194,4 +196,5 @@ public class iFacialMocapTrackingInterface : ExtTrackingModule
         UnifiedTracking.Data.Shapes[(int)UnifiedExpressions.TongueOut].Weight = server.FaceData.BlendValue("tongueOut");
         #endregion
     }
+
 }
